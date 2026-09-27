@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TechStore</title>
+  <link rel="stylesheet" href="techstore.css">
+</head>
+  
+<body>
+
+  <nav>
+    <h1>TechStore</h1>
+
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#categories">Categories</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <section class="hero" id="home">
+    <h2>Welcome to TechStore</h2>
+    <p>Quality technology for everyone.</p>
+    <button onclick="location.href='#products'">Shop Now</button>
+  </section>
+
+  <section class="products" id="products">
+    <h2>Featured Products</h2>
+
+    <div class="product-container">
+
+        <div class="product-card">
+            <img src="https://i.ibb.co/MkfgWs2Q/headphones.jpg" alt="Wireless Headphones">
+            <h3>Wireless Headphones</h3>
+            <p>Premium wireless sound</p>
+            <p class="discount">20% OFF</p>
+            <p class="old-price">₹2,499</p>           
+            <p>₹1,999</p>
+            <button type="button" onclick="selectProduct('Wireless Headphones')">Buy Now</button>
+        </div>
+
+        <div class="product-card">
+            <img src="https://i.ibb.co/Qj6XZzT6/keyboard.jpg" alt="Mechanical Keyboard">
+            <h3>Mechanical Keyboard</h3>
+            <p>Fast and responsive typing</p>
+            <p>₹3,499</p>
+            <button type="button" onclick="selectProduct('Mechanical Keyboard')">Buy Now</button>
+        </div>
+
+       <div class="product-card">
+           <img src="https://i.ibb.co/nsyyTNRS/mouse.jpg" alt="Gaming Mouse">
+           <h3>Gaming Mouse</h3>
+           <p>Fast and precise control</p>
+           <p>₹1,499</p>
+           <button type="button" onclick="selectProduct('Gaming Mouse')">Buy Now</button>
+       </div>
+    
+       <div class="product-card">
+         <img src="https://i.ibb.co/WN0wnxHQ/usb-hub.jpg" alt="USB-C Hub">
+         <h3>USB-C Hub</h3>
+         <p>Multi-port connectivity</p>
+         <p>₹999</p>
+         <button type="button" onclick="selectProduct('USB-C Hub')">Buy Now</button>
+       </div>  
+
+      <div class="product-card">
+            <img src="https://i.ibb.co/4gTW6W94/227cb70fafcf903e973fa20732ab1b79.jpg" alt="227cb70fafcf903e973fa20732ab1b79" border="0">
+            <h3>Smartwatch</h3>
+            <p>Portable speaker with powerful sound</p>
+            <p class="discount">30% OFF</p>
+            <p class="old-price">₹2,999</p>           
+            <p>₹2,099</p>
+            <button type="button" onclick="selectProduct('Smartwatch')">Buy Now</button>
+      </div>
+
+      <div class="product-card">
+         <img src="https://i.ibb.co/d0HsHJpS/244ec1f0c00d47db798d5eb31ee699a5.jpg" alt="244ec1f0c00d47db798d5eb31ee699a5" border="0">
+         <h3>PSP</h3>
+         <p>Portable gaming console for entertainment on the go</p>
+         <p>₹5,999</p>
+         <button type="button" onclick="selectProduct('PSP')">Buy Now</button>
+       </div>  
+
+    </div>
+  </section>
+
+ <section class="categories" id="categories">
+   
+    <h2>Categories</h2>
+
+    <div class="category-container">
+      
+        <div class="category-card" onclick="location.href='#products'">
+            <h3>Audio</h3>
+        </div>
+
+        <div class="category-card" onclick="location.href='#products'">
+            <h3>Keyboards</h3>
+        </div>
+
+        <div class="category-card" onclick="location.href='#products'">
+            <h3>Gaming</h3>
+        </div>
+
+        <div class="category-card" onclick="location.href='#products'">
+            <h3>Accessories</h3>
+        </div>
+      
+    </div>
+ </section>
+
+    <section class="order" id="order">
+    
+    <h2>Order Product</h2>
+    
+    <div id="cart-items"></div>
+    
+    <p id="total-price">Total: ₹0</p>
+
+    <button type="button" onclick="clearCart()">Clear Cart</button>
+    
+    <button onclick="placeOrder()">Order Now</button>
+    
+    <p id="order-message"></p>
+    
+    <label for="quantity">Quantity:</label>
+    
+    <input type="number" id="quantity" value="1" min="1">
+    
+    </section>
+
+      <button onclick="location.href='#home'">Back to Top</button>
+
+  <section class="about" id="about">
+    
+    <h2>About Us</h2>
+
+    <p>
+    TechStore is your one-stop destination for quality tech products,
+    accessories, and gadgets at affordable prices
+    </p>
+    
+  </section>
+  
+  <section class="contact" id="contact">
+    
+    <h2>Contact Us</h2>
+
+    <p>Email: harshwardhanborale@gmail.com</p>
+    
+    <p>Phone: +91 7276376501</p>
+
+</section>
+  
+  <footer>
+    <p>© 2026 TechStore. All rights reserved</p>
+  </footer>
+
+  <script>
+    let cartTotal = 0;
+    let cartItems = {};
+    
+    function selectProduct(product) 
+    {
+        
+        let price;
+    
+        if (product == "Wireless Headphones")
+        {
+            price = 1999;
+        }
+        else if (product == "Mechanical Keyboard")
+        {
+            price = 3499;
+        }
+        else if (product == "Gaming Mouse")
+        {
+            price = 1499;
+        }
+        else if (product == "USB-C Hub")
+        {
+            price = 999;
+        }
+        else if (product == "Smartwatch")
+        {
+            price = 2099;
+        }
+        else if (product == "PSP")
+        {
+            price = 5999;
+        }
+
+        if (cartItems[product])
+        {
+            cartItems[product] = cartItems[product] + 1;
+        }
+        else
+        {
+            cartItems[product] = 1;
+        }
+    
+        cartTotal = cartTotal + price;
+    
+        let cartText = "";
+    
+        for (let item in cartItems)
+        {
+            cartText = cartText + item + 
+              " <button onclick=\"decreaseQuantity('" + item + "')\">−</button> " +
+              " <button onclick=\"increaseQuantity('" + item + "')\">+</button> " +
+              cartItems[item] + "<br>";
+        }
+        
+        document.getElementById("cart-items").innerHTML =
+            cartText;
+        
+        document.getElementById("total-price").textContent =
+            "Total: ₹" + cartTotal;
+    
+        document.getElementById("order-message").textContent = "";
+    
+        document.getElementById("quantity").value =
+            cartItems[product];
+     }
+     function getPrice(product)
+    {
+        if (product == "Wireless Headphones")
+        {
+            return 1999;
+        }
+        else if (product == "Mechanical Keyboard")
+        {
+            return 3499;
+        }
+        else if (product == "Gaming Mouse")
+        {
+            return 1499;
+        }
+        else if (product == "USB-C Hub")
+        {
+            return 999;
+        }
+        else if (product == "Smartwatch")
+        {
+            return 2099;
+        }
+        else if (product == "PSP")
+        {
+            return 5999;
+        }
+    }
+
+     function clearCart()
+    {
+        cartItems = {};
+        cartTotal = 0;
+    
+        document.getElementById("cart-items").innerHTML = "";
+        document.getElementById("total-price").textContent = "Total: ₹0";
+        document.getElementById("quantity").value = 1;
+        document.getElementById("order-message").textContent = "";
+    }
+
+    function decreaseQuantity(product)
+    {
+        if (cartItems[product] > 1)
+        {
+            cartItems[product] = cartItems[product] - 1;
+            cartTotal = cartTotal - getPrice(product);
+    
+            let cartText = "";
+    
+            for (let item in cartItems)
+            {
+                cartText = cartText + item +
+                  " <button onclick=\"decreaseQuantity('" + item + "')\">−</button> " +
+                  cartItems[item] + "<br>";
+            }
+    
+            document.getElementById("cart-items").innerHTML =
+                cartText;
+    
+            document.getElementById("total-price").textContent =
+                "Total: ₹" + cartTotal;
+        }
+    }
+    
+    function increaseQuantity(product)
+    {
+        cartItems[product] = cartItems[product] + 1;
+        cartTotal = cartTotal + getPrice(product);
+    
+        let cartText = "";
+    
+        for (let item in cartItems)
+        {
+            cartText = cartText + item +
+              " <button onclick=\"decreaseQuantity('" + item + "')\">−</button> " +
+              " <button onclick=\"increaseQuantity('" + item + "')\">+</button> " +
+              cartItems[item] + "<br>";
+        }
+    
+        document.getElementById("cart-items").innerHTML =
+            cartText;
+    
+        document.getElementById("total-price").textContent =
+            "Total: ₹" + cartTotal;
+        }
+    
+    function placeOrder()
+    {
+        document.getElementById("order-message").textContent =
+        "Order placed successfully!";
+
+        document.getElementById("quantity").value = 1;
+    }
+    
+  </script>
+  
+</body>
+</html>
