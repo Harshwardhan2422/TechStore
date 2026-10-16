@@ -27,6 +27,22 @@
 
   <section class="products" id="products">
     <h2>Featured Products</h2>
+    
+    <div class="search-box">
+    <input
+       type="text"
+       id="product-search"
+       placeholder="Search products..."
+       oninput="searchProducts()"
+       >
+       
+      
+    <button type="button" onclick="searchProducts()">
+     Search 🔍
+   </button>
+  </div>
+  
+  <p id="no-products" style="display: none;">😕 No products found. Try another search.</p>
 
     <div class="product-container">
 
@@ -120,9 +136,30 @@
 
     <button type="button" onclick="clearCart()">Clear Cart</button>
     
+    <h3>Customer Details</h3>
+
+    <label for="customer-name">Full Name:</label>
+    <input type="text" id="customer-name"
+       placeholder="Enter your full name">
+
+    <label for="customer-phone">Phone Number:</label>
+    <input type="tel" id="customer-phone"
+       placeholder="Enter your phone number">
+
+    <label for="customer-address">Delivery Address:</label>
+    <textarea id="customer-address"
+          placeholder="Enter your delivery address"
+          rows="3"></textarea>
+    
     <button onclick="placeOrder()">Order Now</button>
     
     <p id="order-message"></p>
+    
+    <div id="order-summary"></div>
+    
+    <button type="button" onclick="printReceipt()">
+       Print Order Receipt
+   </button>
     
     <label for="quantity">Quantity:</label>
     
@@ -160,69 +197,31 @@
   <script>
     let cartTotal = 0;
     let cartItems = {};
+    let nextOrderId = 1001;
     
-    function selectProduct(product) 
-    {
-        
-        let price;
-    
-        if (product == "Wireless Headphones")
-        {
-            price = 1999;
-        }
-        else if (product == "Mechanical Keyboard")
-        {
-            price = 3499;
-        }
-        else if (product == "Gaming Mouse")
-        {
-            price = 1499;
-        }
-        else if (product == "USB-C Hub")
-        {
-            price = 999;
-        }
-        else if (product == "Smartwatch")
-        {
-            price = 2099;
-        }
-        else if (product == "PSP")
-        {
-            price = 5999;
-        }
+     function selectProduct(product)
+     {
+          let price = getPrice(product);
 
-        if (cartItems[product])
-        {
-            cartItems[product] = cartItems[product] + 1;
-        }
-        else
-        {
-            cartItems[product] = 1;
-        }
+          if (price === undefined) return;
+
+          let quantity =                 Number(document.getElementById("quantity").value);
+
+          if (!Number.isInteger(quantity) || quantity < 1)
+          {
+              document.getElementById("order-message").textContent =
+      "Please enter a valid quantity.";
+    return;
+          }
+
+          cartItems[product] = (cartItems[product] || 0) + quantity;
+
+          renderCart();
+
+          document.getElementById("order-message").textContent = "";
+          document.getElementById("quantity").value = 1;
+    }
     
-        cartTotal = cartTotal + price;
-    
-        let cartText = "";
-    
-        for (let item in cartItems)
-        {
-            cartText = cartText + item + 
-              " <button onclick=\"decreaseQuantity('" + item + "')\">−</button> " +
-              " <button onclick=\"increaseQuantity('" + item + "')\">+</button> " +
-              cartItems[item] + "<br>";
-        }
-        
-        document.getElementById("cart-items").innerHTML =
-            cartText;
-        
-        document.getElementById("total-price").textContent =
-            "Total: ₹" + cartTotal;
-    
-        document.getElementById("order-message").textContent = "";
-    
-        document.getElementById("quantity").value =
-            cartItems[product];
-     }
      function getPrice(product)
     {
         if (product == "Wireless Headphones")
@@ -251,70 +250,218 @@
         }
     }
 
-     function clearCart()
-    {
-        cartItems = {};
-        cartTotal = 0;
+     function clearCart() 
+     {
+          cartItems = {};
+          cartTotal = 0;
+
+          renderCart();
     
-        document.getElementById("cart-items").innerHTML = "";
-        document.getElementById("total-price").textContent = "Total: ₹0";
-        document.getElementById("quantity").value = 1;
-        document.getElementById("order-message").textContent = "";
+          document.getElementById("quantity").value = 1;
+          document.getElementById("order-message").textContent = "";
+          document.getElementById("order-summary").textContent = "";
     }
 
-    function decreaseQuantity(product)
+    function decreaseQuantity(product) 
     {
-        if (cartItems[product] > 1)
-        {
-            cartItems[product] = cartItems[product] - 1;
-            cartTotal = cartTotal - getPrice(product);
-    
-            let cartText = "";
-    
-            for (let item in cartItems)
-            {
-                cartText = cartText + item +
-                  " <button onclick=\"decreaseQuantity('" + item + "')\">−</button> " +
-                  cartItems[item] + "<br>";
-            }
-    
-            document.getElementById("cart-items").innerHTML =
-                cartText;
-    
-            document.getElementById("total-price").textContent =
-                "Total: ₹" + cartTotal;
-        }
+          if (cartItems[product] > 1) 
+          {
+              cartItems[product] = cartItems[product] - 1;
+              renderCart();
+          }
     }
     
     function increaseQuantity(product)
     {
-        cartItems[product] = cartItems[product] + 1;
-        cartTotal = cartTotal + getPrice(product);
-    
-        let cartText = "";
-    
-        for (let item in cartItems)
-        {
-            cartText = cartText + item +
-              " <button onclick=\"decreaseQuantity('" + item + "')\">−</button> " +
-              " <button onclick=\"increaseQuantity('" + item + "')\">+</button> " +
-              cartItems[item] + "<br>";
-        }
-    
-        document.getElementById("cart-items").innerHTML =
-            cartText;
-    
-        document.getElementById("total-price").textContent =
-            "Total: ₹" + cartTotal;
-        }
-    
-    function placeOrder()
-    {
-        document.getElementById("order-message").textContent =
-        "Order placed successfully!";
+          cartItems[product] = cartItems[product] + 1;
 
-        document.getElementById("quantity").value = 1;
+          renderCart();
     }
+    
+    function placeOrder() 
+    {
+          if (Object.keys(cartItems).length === 0)
+          {
+             document.getElementById("order-message").textContent =
+          "Your cart is empty!";
+              return;
+          }
+
+          let name =         document.getElementById("customer-name").value.trim();
+          let phone = document.getElementById("customer-phone").value.trim();
+          let address = document.getElementById("customer-address").value.trim();
+
+          if (name === "" || phone === "" || address === "") {
+          document.getElementById("order-message").textContent =
+          "Please fill in all customer details.";
+          return;
+  }
+  
+  if (!/^\d{10}$/.test(phone))
+  {
+       document.getElementById("order-message").textContent =
+        "Please enter a valid 10-digit phone number.";
+       return;
+  }
+  
+  let orderId = "TS" + nextOrderId;
+  nextOrderId++;
+  
+  let orderDate = new Date().toLocaleString("en-IN",
+  {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+  });
+  
+  let summary = "🎉 Order Confirmed!\n";
+    summary += "Customer: " + name + "\n";
+
+    for (let item in cartItems)
+    {
+      summary += item + " × " + cartItems[item] +
+        " — ₹" + getPrice(item) * cartItems[item] + "\n";
+    }
+
+let totalPaid = cartTotal;
+  clearCart();
+
+  document.getElementById("order-message").textContent =
+    name + ", your order has been placed successfully!";
+    
+    document.getElementById("order-summary").textContent =
+    "🎉 Order Confirmed!\n" +
+    "Customer: " + name + "\n" +
+    "Order ID: " + orderId + "\n" +
+    "Order Date: " + orderDate + "\n" +
+    summary.substring(summary.indexOf("\n") + 1 + ("Customer: " +  name + "\n").length) +
+    "Total Paid: ₹" + totalPaid + "\n" +
+    "Status: Order placed successfully!";
+    
+    document.getElementById("customer-name").value = "";
+    document.getElementById("customer-phone").value = "";
+    document.getElementById("customer-address").value = "";
+}
+    
+    function renderCart()
+    {
+        let cartText = "";
+        cartTotal = 0;
+        
+
+        for (let item in cartItems) 
+        {
+            let price = getPrice(item);
+            let quantity = cartItems[item];
+
+            cartTotal = cartTotal + price * quantity;
+
+            cartText += item +
+            " <button onclick=\"decreaseQuantity('" + item + "')        \">−</button> " +
+            " <button onclick=\"increaseQuantity('" + item + "')\">+</button> " +
+            " <button onclick=\"removeProduct('" + item + "')    \">Remove</button> " +
+            quantity +
+            " × ₹" + price +
+            " = ₹" + price * quantity +
+            "<br>";
+          }
+
+         document.getElementById("cart-items").innerHTML = cartText;
+
+         document.getElementById("total-price").textContent =
+    "Total: ₹" + cartTotal;
+    }
+    
+    function printReceipt()
+    {
+          let receipt = document.getElementById("order-summary");
+
+          if (receipt.textContent.trim() === "")
+          {
+                alert("Please place an order first!");
+                return;
+          }
+
+          let receiptWindow = window.open("", "_blank");
+
+          if (!receiptWindow) 
+          {
+                alert("Please open TechStore in your browser to print.");
+                return;
+          }
+
+          receiptWindow.document.write
+          (`
+            <html>
+            <head>
+           <title>TechStore Receipt</title>
+           <style>
+            body 
+            {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              color: #111;
+            }
+            h2
+            {
+              text-align: center;
+            }
+            pre 
+            {
+              white-space: pre-wrap;
+              overflow-wrap: anywhere;
+              font-size: 16px;
+              line-height: 1.8;
+            }
+        </style>
+        </head>
+        <body>
+        <h2>TechStore Receipt</h2>
+        
+        <pre>${receipt.textContent}</pre>
+       </body>
+      </html>
+   `);
+
+    receiptWindow.document.close();
+    receiptWindow.focus();
+
+    receiptWindow.onload = function () {
+    receiptWindow.print();
+  };
+}
+
+    function searchProducts() 
+    {
+         let searchText = document
+        .getElementById("product-search")
+        .value.toLowerCase().trim();
+
+      let products = document.querySelectorAll(".product-card");
+      let found = 0;
+
+      for (let product of products) 
+      {
+           let productName = product
+          .querySelector("h3")
+          .textContent.toLowerCase();
+
+         if (productName.includes(searchText))
+         {
+              product.style.display = "";
+              found++;
+         } 
+         else 
+         {
+             product.style.display = "none";
+         }
+         document.getElementById("no-products").style.display =
+         found === 0 ? "block" : "none";
+       }
+     }
     
   </script>
   
